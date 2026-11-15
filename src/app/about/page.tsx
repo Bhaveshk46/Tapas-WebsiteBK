@@ -231,17 +231,16 @@ export default function AboutPage() {
             id="about-hero-heading"
             className="font-heading text-[clamp(2.1rem,4.5vw,3.35rem)] font-semibold text-tapas-text leading-[1.18] mb-5"
           >
-            Cultivating mindfulness, stillness, and{' '}
+            A space to pause, grow, connect and{' '}
             <span className="text-tapas-accent underline decoration-tapas-border decoration-wavy decoration-2 underline-offset-4">
-              purposeful living on campus.
+            discover your potential.
             </span>
           </h1>
           <p className="text-[clamp(1.05rem,2vw,1.18rem)] text-tapas-muted leading-[1.65] mb-8 max-w-[34rem]">
-            TAPAS is the official Heartfulness Meditation and Student Wellness Community at Pillai
-            University. We aim to create a space that inspires holistic well-being, personal growth
-            and meaningful connections. Through meditation, yoga, wellness initiatives and shared
-            experiences, we encourage everyone to nurture their mind, strengthen their body,
-            explore their potential and embrace a more balanced and fulfilling way of life.
+           TAPAS is the official  Meditation and  Wellness Community at Pillai University. 
+           We aim to create a space that inspires holistic well-being, personal growth and meaningful connections.
+            Through meditation, yoga, wellness initiatives and shared experiences, we encourage everyone to nurture their mind, 
+            strengthen their body, explore their potential and embrace a more balanced and fulfilling way of life.
           </p>
           <div className="flex flex-wrap items-center gap-4">
             <Link
@@ -284,22 +283,21 @@ export default function AboutPage() {
             id="what-is-tapas-heading"
             className="font-heading text-[clamp(1.75rem,3.5vw,2.5rem)] text-tapas-text leading-[1.2] mb-4"
           >
-            A mindful community rooted in heart‑centered living
+            A community rooted in heart‑centered living
           </h2>
           <div className="max-w-[44rem] mx-auto space-y-3 text-tapas-muted text-[1.03rem] leading-[1.68]">
             <p>
-              Established on 16 October 2019 in association with the Heartfulness Institute, TAPAS
-              was created to bridge academic rigour and personal well‑being. Campus life asks a lot
-              of everyone, from students racing through exams and projects to faculty and staff
-              balancing teaching, research, and daily responsibilities. Relentless stress often
-              leads to burnout. TAPAS offers a serene sanctuary right within campus walls, for
-              every member of the college community.
+              Established on 16 October 2019 in association with the Heartfulness Institute,
+               TAPAS was created to bridge the gap between personal well-being and the demands of everyday life.
+                In a world where people constantly juggle work, studies, relationships, and personal responsibilities, stress and 
+                mental exhaustion can easily take a toll on overall well-being. TAPAS provides a peaceful space for individuals to pause, 
+                reconnect with themselves, and discover the benefits of meditation.
             </p>
             <p>
-              Our vibe is warm, welcoming, and grounded. There are no dogmas, no prerequisite
-              spiritual background, and zero pressure. Whether you are a student, a faculty member,
-              or a staff member, and whether you are trying meditation for the first time, looking
-              to sharpen your focus, or seeking deeper calm, TAPAS welcomes you with open arms.
+              Our vibe is warm, welcoming, and grounded. There are no dogmas, no prerequisites, and absolutely no pressure.
+               Whether you are a student, working professional, homemaker, or simply someone seeking a little more balance in life, 
+               TAPAS welcomes everyone. Whether you're exploring meditation for the first time, looking to improve focus, manage stress, 
+               or find deeper inner calm, there's a place for you here
             </p>
           </div>
         </div>
