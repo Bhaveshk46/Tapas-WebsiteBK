@@ -244,7 +244,7 @@ export default function AboutPage() {
           </p>
           <div className="flex flex-wrap items-center gap-4">
             <Link
-              href="/join"
+              href="/events"
               className="inline-flex items-center justify-center bg-tapas-accent text-white px-7 py-[0.85rem] rounded-[6px] text-[1.02rem] font-semibold transition-colors duration-200 hover:bg-tapas-accent-hover shadow-sm"
             >
               Join Next Session
@@ -797,7 +797,7 @@ export default function AboutPage() {
           {/* CTA */}
           <div className="flex flex-col sm:flex-row items-center justify-center gap-4 text-center">
             <Link
-              href="/join"
+              href="/contact"
               className="group inline-flex items-center justify-center bg-tapas-accent text-white px-8 py-[0.85rem] rounded-[6px] text-[1.05rem] font-semibold transition-colors duration-200 hover:bg-tapas-accent-hover shadow-sm"
             >
               <span>Get in Touch</span>
@@ -976,7 +976,7 @@ export default function AboutPage() {
           </p>
 
           <Link
-            href="/join"
+            href="/events"
             className="inline-flex items-center justify-center bg-tapas-accent text-white px-9 py-3.5 rounded-[6px] text-[1.05rem] font-semibold transition-colors duration-200 hover:bg-tapas-accent-hover shadow-sm"
           >
             Register for Next Gathering
