@@ -1,0 +1,150 @@
+name: Frontend CI
+
+on:
+  pull_request:
+  push:
+    branches:
+      - main
+
+# Newer commits replace older, still-running checks for the same pull request or branch.
+concurrency:
+  group: frontend-ci-${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
+# The workflow reads source code only. It never receives deployment credentials.
+permissions:
+  contents: read
+  pull-requests: read
+
+jobs:
+  changes:
+    name: Detect frontend changes
+    runs-on: ubuntu-latest
+    outputs:
+      frontend: ${{ steps.filter.outputs.frontend }}
+    steps:
+      - uses: actions/checkout@v4
+      - id: filter
+        uses: dorny/paths-filter@v3
+        with:
+          filters: |
+            frontend:
+              - 'src/**'
+              - 'public/**'
+              - 'package.json'
+              - 'package-lock.json'
+              - 'tsconfig.json'
+              - 'next.config.mjs'
+              - 'postcss.config.mjs'
+              - 'tailwind.config.ts'
+              - '.eslintrc.json'
+              - '.prettierrc'
+              - '.prettierignore'
+              - '.nvmrc'
+              - 'vercel.json'
+              - '.github/workflows/frontend-ci.yml'
+
+  quality:
+    name: Format, lint, and type check
+    needs: changes
+    if: needs.changes.outputs.frontend == 'true'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version-file: '.nvmrc'
+          cache: npm
+      - run: npm ci
+      # Temporary until the formatting-only PR is merged.
+      - run: npm run format:check
+        continue-on-error: true
+      - run: npm run lint
+      - run: npm run typecheck
+
+  build-and-smoke-test:
+    name: Build and homepage smoke test
+    needs: changes
+    if: needs.changes.outputs.frontend == 'true'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version-file: '.nvmrc'
+          cache: npm
+      - run: npm ci
+      - run: npm run build
+      - name: Start the built site and check the homepage
+        shell: bash
+        run: |
+          npm run start -- --hostname 127.0.0.1 > next-server.log 2>&1 &
+          server_pid=$!
+          trap 'kill "$server_pid"' EXIT
+
+          for attempt in {1..20}; do
+            if curl --fail --silent --show-error --max-time 10 http://127.0.0.1:3000/ > /dev/null; then
+              exit 0
+            fi
+            sleep 2
+          done
+
+          cat next-server.log
+          exit 1
+
+  security:
+    name: Dependency audit and secret scan
+    needs: changes
+    if: needs.changes.outputs.frontend == 'true'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-node@v4
+        with:
+          node-version-file: '.nvmrc'
+          cache: npm
+      - run: npm ci
+      - name: Audit production dependencies (warning only)
+        shell: bash
+        run: |
+          if ! npm audit --omit=dev --audit-level=high; then
+            echo '::warning::npm audit found production dependency vulnerabilities. This is non-blocking; review the audit output.'
+          fi
+      - name: Install pinned Gitleaks CLI
+        shell: bash
+        run: |
+          GITLEAKS_VERSION=8.30.0
+          curl --fail --silent --show-error --location \
+            "https://github.com/gitleaks/gitleaks/releases/download/v${GITLEAKS_VERSION}/gitleaks_${GITLEAKS_VERSION}_linux_x64.tar.gz" \
+            --output gitleaks.tar.gz
+          tar -xzf gitleaks.tar.gz gitleaks
+          sudo install gitleaks /usr/local/bin/gitleaks
+      - name: Scan full repository history for accidentally committed secrets
+        run: gitleaks git --log-opts="--all" .
+
+  required-check:
+    name: Required frontend CI summary
+    if: always()
+    needs:
+      - changes
+      - quality
+      - build-and-smoke-test
+      - security
+    runs-on: ubuntu-latest
+    steps:
+      - name: Report the final result
+        shell: bash
+        run: |
+          results='${{ needs.changes.result }} ${{ needs.quality.result }} ${{ needs.build-and-smoke-test.result }} ${{ needs.security.result }}'
+          if [[ "$results" == *"failure"* || "$results" == *"cancelled"* ]]; then
+            echo 'One or more frontend CI jobs failed or were cancelled.'
+            exit 1
+          fi
+
+          if [[ '${{ needs.changes.outputs.frontend }}' != 'true' ]]; then
+            echo 'No frontend files changed; frontend checks were intentionally skipped.'
+          else
+            echo 'All required frontend checks passed.'
+          fi
